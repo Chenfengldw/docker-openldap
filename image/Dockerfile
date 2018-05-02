@@ -3,8 +3,8 @@
 FROM osixia/light-baseimage:1.1.1
 MAINTAINER Bertrand Gouny <bertrand.gouny@osixia.net>
 
-ARG LDAP_OPENLDAP_GID
-ARG LDAP_OPENLDAP_UID
+ARG LDAP_OPENLDAP_GID=2000
+ARG LDAP_OPENLDAP_UID=2000
 
 # Add openldap user and group first to make sure their IDs get assigned consistently, regardless of whatever dependencies get added
 # If explicit uid or gid is given, use it.
@@ -25,7 +25,7 @@ RUN echo "path-include /usr/share/doc/krb5*" >> /etc/dpkg/dpkg.cfg.d/docker && a
        libsasl2-modules-otp \
        libsasl2-modules-sql \
        openssl \
-       slapd \
+       slapd \
        krb5-kdc-ldap \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
@@ -38,10 +38,16 @@ ADD service /container/service
 RUN /container/tool/install-service
 
 # Add default env variables
-ADD environment /container/environment/99-default
+COPY environment /container/environment/99-default
+
+COPY base.ldif / 
+
+#add base ou for ldap
 
 # Expose default ldap and ldaps ports
 EXPOSE 389 636
 
 # Put ldap config and database dir in a volume to persist data.
-# VOLUME /etc/ldap/slapd.d /var/lib/ldap
+VOLUME /etc/ldap/slapd.d /var/lib/ldap
+
+CMD ldapadd -x -D "cn=admin,dc=starcloud,dc=ai" -w admin -H ldap://localhost -f base.ldif
