@@ -10,3 +10,5 @@ log-helper level eq trace && set -x
 ulimit -n 1024
 
 exec /usr/sbin/slapd -h "ldap://$HOSTNAME ldaps://$HOSTNAME ldapi:///" -u openldap -g openldap -d $LDAP_LOG_LEVEL
+
+exec ldapadd -H "ldap://$HOSTNAME" -D "cn=admin,dc=starcloud,dc=ai" -w admin -x -f /base.ldif

@@ -25,7 +25,7 @@ RUN echo "path-include /usr/share/doc/krb5*" >> /etc/dpkg/dpkg.cfg.d/docker && a
        libsasl2-modules-otp \
        libsasl2-modules-sql \
        openssl \
-       slapd \
+       slapd \
        krb5-kdc-ldap \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
@@ -50,4 +50,4 @@ EXPOSE 389 636
 # Put ldap config and database dir in a volume to persist data.
 VOLUME /etc/ldap/slapd.d /var/lib/ldap
 
-CMD ldapadd -x -D "cn=admin,dc=starcloud,dc=ai" -w admin -H ldap://localhost -f base.ldif
+
